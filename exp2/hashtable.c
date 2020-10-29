@@ -10,9 +10,9 @@
 #include <errno.h>
 #include <glib.h>
 
-#ifdef USE_VTUNE
-#include <ittnotify.h>
-#endif
+// #ifdef USE_VTUNE
+// #include <ittnotify.h>
+// #endif
 
 #include "common.h"  // xzl
 #include "measure.h"  // xzl
@@ -289,9 +289,7 @@ int main(int argc, char** argv) {
 #else
 			for(int i = 0; i < 1; i++) {
 #endif
-					int ll = SortedList_length(&lists[i]);
-					fprintf(stderr, "list %d: %d items; ", i, ll);
-					total += ll;
+
 			}
 			fprintf(stderr, "\ntotal %ld items\n", total);
     }
@@ -306,12 +304,6 @@ int main(int argc, char** argv) {
 
     // --- clean up ---- //
     free_locks(mutexes, 1, spinLocks);
-#ifdef USE_PREALLOC
-    free(elements);
-#else
-    free(keys);
-#endif
-    free(lists);
 
     exit(0);
 }
