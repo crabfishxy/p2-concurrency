@@ -163,14 +163,6 @@ struct prog_config parse_config(int argc, char **argv) {
 
 #ifdef USE_MULTITABLES
     fprintf(stderr, "USE_MULTITABLES=yes\n");
-
-    // load balancing not enabled, while #parts != #threads
-		if (config.numParts != config.numThreads) {
-			fprintf(stderr, "no load balancing (USE_LB undefined). # threads must equal # parts\n");
-			exit(1);
-		}
-
-    config.numParts = config.numThreads;
 #else
     fprintf(stderr, "USE_MULTITABLES=no\n");
 #endif
