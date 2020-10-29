@@ -175,7 +175,7 @@ void* thread_func(void* thread_id){
 
 
 			pthread_mutex_lock(&mutexes[0]);
-			//SortedList_insert(&lists[0], p);
+			g_hash_table_insert (tables[0], GINT_TO_POINTER (i), GINT_TO_POINTER (i));
 			pthread_mutex_unlock(&mutexes[0]);
 	 }
 #endif // USB_LB
@@ -283,12 +283,14 @@ int main(int argc, char** argv) {
     // we're done. correctness check up
     {
     	long total = 0;
-#if defined(USE_MULTITABLES) || defined(USE_LB)
+#if defined(USE_MULTITABLES)
 			for(int i = 0; i < numThreads; i++) {
 #else
-			for(int i = 0; i < 1; i++) {
+			for(int i = 0; i < the_n_elements; i++) {
+                int val = GPOINTER_TO_INT (g_hash_table_lookup (tables[0], GINT_TO_POINTER (i)));
+                assert(val == i);
 #endif
-
+                
 			}
 			fprintf(stderr, "\ntotal %ld items\n", total);
     }
