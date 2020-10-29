@@ -10,9 +10,9 @@
 #include <errno.h>
 #include <glib.h>
 
-// #ifdef USE_VTUNE
-// #include <ittnotify.h>
-// #endif
+#ifdef USE_VTUNE
+#include <ittnotify.h>
+#endif
 
 #include "common.h"  // xzl
 #include "measure.h"  // xzl
@@ -28,7 +28,7 @@ GHashTable* tables[1000];
 int* spinLocks = NULL;
 pthread_mutex_t* mutexes = NULL;
 
-// int the_n_elements = 0;
+int the_n_elements = 0;
 
 struct prog_config the_config;
 
@@ -173,7 +173,6 @@ void* thread_func(void* thread_id){
 //			assert(p);
 //			p->key = keys[i];
 
-			SortedListElement_t *p = get_element(i);
 
 			pthread_mutex_lock(&mutexes[0]);
 			//SortedList_insert(&lists[0], p);

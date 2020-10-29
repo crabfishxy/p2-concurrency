@@ -14,12 +14,12 @@ SET(CMAKE_C_COMPILER "gcc")
 
 include_directories(
   ./
-  /usr/include/glib-2.0
-  /usr/lib/x86_64-linux-gnu/glib-2.0/include
-)
+  /usr/local/include/glib-2.0
+ )
 
 set(COMMON_LIB
     dl
+    glib-2.0
     )
   
 if (USE_VTUNE)

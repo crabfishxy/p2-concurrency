@@ -102,15 +102,6 @@ void free_locks(pthread_mutex_t *mutexes, int nmutex, int *spinlocks) {
 //     return lists;
 // }
 
-GHashTable * alloc_hashtable(int n_tables) {
-	assert(n_tables > 0);
-	GHashTable *tables[n_tables];
-	assert(tables);
-	for(int i = 0; i < n_tables; i ++){
-		tables[i] = g_hash_table_new (NULL, NULL);	
-	}
-	return tables;
-}
 
 struct prog_config parse_config(int argc, char **argv) {
 		struct prog_config config = {
