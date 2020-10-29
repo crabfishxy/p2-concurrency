@@ -157,7 +157,7 @@ void* thread_func(void* thread_id){
 
 //    printf("i'm thread %d\n", id);
 
-    int per_part = the_n_elements / the_config.numParts;
+    int per_part = the_n_elements / the_config.numThreads;
 
 #ifdef USE_MULTITABLES
     //	#ifdef USE_VTUNE
@@ -214,7 +214,7 @@ int main(int argc, char** argv) {
 
     the_n_elements = numThreads * iterations;
     printf("the_n_elements: %d\n", the_n_elements);
-#ifdef USE_LB
+#ifdef USE_MULTITABLES
     alloc_locks(&mutexes, 1, &spinLocks, numParts);
 #else
     alloc_locks(&mutexes, 1, NULL, 0);  // multilists or biglock: only 1 mutex, no spinlocks
@@ -233,10 +233,10 @@ int main(int argc, char** argv) {
 		__itt_thread_set_name("my main");
 
 		// pre create here, instead of doing it inside tasks
-		sh_parts = malloc(sizeof(__itt_string_handle *) * numParts);
+		sh_parts = malloc(sizeof(__itt_string_handle *) * numThreads);
 		assert(sh_parts);
 		char itt_task_name[32];
-		for (int i = 0; i < numParts; i++) {
+		for (int i = 0; i < numThreads; i++) {
 			snprintf(itt_task_name, 32, "part-%d", i);
 			sh_parts[i] = __itt_string_handle_create(itt_task_name);
 		}
