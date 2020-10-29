@@ -215,7 +215,7 @@ int main(int argc, char** argv) {
     the_n_elements = numThreads * iterations;
     printf("the_n_elements: %d\n", the_n_elements);
 #ifdef USE_MULTITABLES
-    alloc_locks(&mutexes, 1, &spinLocks, numParts);
+    alloc_locks(&mutexes, numParts, &spinLocks, 0);
 #else
     alloc_locks(&mutexes, 1, NULL, 0);  // multilists or biglock: only 1 mutex, no spinlocks
 #endif
