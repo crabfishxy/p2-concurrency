@@ -3,6 +3,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <assert.h>
+#include <glib.h>
 
 #include "common.h"
 
@@ -77,28 +78,38 @@ void free_locks(pthread_mutex_t *mutexes, int nmutex, int *spinlocks) {
   	free(spinlocks);
 }
 
-SortedList_t * alloc_lists(int n_lists) {
-		assert(n_lists > 0);
-		SortedList_t * lists = malloc(sizeof(SortedList_t) * n_lists);
-		assert(lists);
+// SortedList_t * alloc_lists(int n_lists) {
+// 		assert(n_lists > 0);
+// 		SortedList_t * lists = malloc(sizeof(SortedList_t) * n_lists);
+// 		assert(lists);
 
-    for (int i = 0; i < n_lists; i++){
-        lists[i].prev = (SortedListElement_t *)&lists[i];
-        lists[i].next = (SortedListElement_t *)&lists[i];
-        lists[i].key = 0;
-    }
+//     for (int i = 0; i < n_lists; i++){
+//         lists[i].prev = (SortedListElement_t *)&lists[i];
+//         lists[i].next = (SortedListElement_t *)&lists[i];
+//         lists[i].key = 0;
+//     }
 
-// printf() with std redirect will result in a non-ASCII text file which Python failed to parse. Why? 
-#if 1 
-    fprintf(stderr, "init %d lists. sizeof(SortedList_t) = %lu "
-    		"padding seems: %s\n",
-    		n_lists, sizeof(SortedList_t),
-				sizeof(SortedList_t) > sizeof(SortedListElement_t) ? "ON" : "OFF");
-#endif
+// // printf() with std redirect will result in a non-ASCII text file which Python failed to parse. Why? 
+// #if 1 
+//     fprintf(stderr, "init %d lists. sizeof(SortedList_t) = %lu "
+//     		"padding seems: %s\n",
+//     		n_lists, sizeof(SortedList_t),
+// 				sizeof(SortedList_t) > sizeof(SortedListElement_t) ? "ON" : "OFF");
+// #endif
 
-    //printf("%d\n", n_lists);
-	//printf("hello world");
-    return lists;
+//     //printf("%d\n", n_lists);
+// 	//printf("hello world");
+//     return lists;
+// }
+
+GHashTable * alloc_hashtable(int n_tables) {
+	assert(n_tables > 0);
+	GHashTable *tables[n_tables];
+	assert(tables);
+	for(int i = 0; i < n_tables; i ++){
+		tables[i] = g_hash_table_new (NULL, NULL);	
+	}
+	return tables;
 }
 
 struct prog_config parse_config(int argc, char **argv) {
@@ -159,18 +170,8 @@ struct prog_config parse_config(int argc, char **argv) {
     if (config.numParts == -1)  /* #parts unspecified, default = 1. biglock */
     	config.numParts = config.numThreads;
 
-#if defined(USE_MULTILISTS) && defined(USE_LB)
-#error "only one of USE_MULTILISTS and USE_LB can be compiled"
-#endif
-
-#ifdef USE_PREALLOC
-    fprintf(stderr, "USE_PREALLOC=yes\n");
-#else
-    fprintf(stderr, "USE_PREALLOC=no\n");
-#endif
-
-#ifdef USE_MULTILISTS
-    fprintf(stderr, "USE_MULTILISTS=yes\n");
+#ifdef USE_MULTITABLES
+    fprintf(stderr, "USE_MULTITABLES=yes\n");
 
     // load balancing not enabled, while #parts != #threads
 		if (config.numParts != config.numThreads) {
@@ -180,19 +181,7 @@ struct prog_config parse_config(int argc, char **argv) {
 
     config.numParts = config.numThreads;
 #else
-    fprintf(stderr, "USE_MULTILISTS=no\n");
-#endif
-
-#ifdef USE_LB
-		fprintf(stderr, "USE_LB=yes\n");
-#else
-		fprintf(stderr, "USE_LB=no\n");
-#endif
-
-#ifdef USE_PADDING
-    fprintf(stderr, "USE_PADDING=yes\n");
-#else
-    fprintf(stderr, "USE_PADDING=no\n");
+    fprintf(stderr, "USE_MULTITABLES=no\n");
 #endif
 
     return config;

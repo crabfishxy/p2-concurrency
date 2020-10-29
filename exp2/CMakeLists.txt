@@ -14,6 +14,8 @@ SET(CMAKE_C_COMPILER "gcc")
 
 include_directories(
   ./
+  /usr/include/glib-2.0
+  /usr/lib/x86_64-linux-gnu/glib-2.0/include
 )
 
 set(COMMON_LIB
@@ -44,7 +46,6 @@ file(GLOB HEADERS
 
 file(GLOB COMMON_SOURCES
   ${HEADERS}
-  SortedList.c 
   measure.c 
   common.c)
 
@@ -53,63 +54,26 @@ file(GLOB COMMON_SOURCES
 # ------------------------------------- #
 
 # biglock
-add_executable(list
-  list.c
+add_executable(hashtable
+  hashtable.c
   ${COMMON_SOURCES}
 )
 
-TARGET_LINK_LIBRARIES(list
+TARGET_LINK_LIBRARIES(hashtable
         ${COMMON_LIB}
         )      
 
 # ------------------------------------- #
-add_executable(list-m
-  list.c
+add_executable(hashtable-m
+  hashtable.c
   ${COMMON_SOURCES}
 )
-set_target_properties(list-m PROPERTIES COMPILE_FLAGS "-DUSE_MULTILISTS" )
-TARGET_LINK_LIBRARIES(list-m
+set_target_properties(hashtable-m PROPERTIES COMPILE_FLAGS "-DUSE_MULTITABLES" )
+TARGET_LINK_LIBRARIES(hashtable-m
         ${COMMON_LIB}
         )        
 
-# ------------------------------------- #
-add_executable(list-p
-  list.c
-  ${COMMON_SOURCES}
-)
-set_target_properties(list-p PROPERTIES COMPILE_FLAGS "-DUSE_PREALLOC" )
-TARGET_LINK_LIBRARIES(list-p
-        ${COMMON_LIB}
-        )        
-# ------------------------------------- #
-add_executable(list-pm
-  list.c
-  ${COMMON_SOURCES}
-)
-set_target_properties(list-pm PROPERTIES COMPILE_FLAGS "-DUSE_PREALLOC -DUSE_MULTILISTS" )
-TARGET_LINK_LIBRARIES(list-pm
-        ${COMMON_LIB}
-        )        
-# ------------------------------------- #
-add_executable(list-pml
-  list.c
-  ${COMMON_SOURCES}
-)
-set_target_properties(list-pml PROPERTIES 
-  COMPILE_FLAGS "-DUSE_PREALLOC -DUSE_LB" )
-TARGET_LINK_LIBRARIES(list-pml
-        ${COMMON_LIB}
-        )        
-# ------------------------------------- #
-add_executable(list-pmla
-  list.c
-  ${COMMON_SOURCES}
-)
-set_target_properties(list-pmla PROPERTIES 
-  COMPILE_FLAGS "-DUSE_PREALLOC -DUSE_LB -DUSE_PADDING" )
-TARGET_LINK_LIBRARIES(list-pmla
-        ${COMMON_LIB}
-        )        
+
 # ------------------------------------- #
 #add_executable(list9
 #  list9.c
