@@ -205,6 +205,7 @@ int main(int argc, char** argv) {
     srand((unsigned int) time(NULL));
 
     the_n_elements = numThreads * iterations;
+    printf("the_n_elements: %d\n", the_n_elements);
 #ifdef USE_LB
     alloc_locks(&mutexes, 1, &spinLocks, numParts);
 #else
