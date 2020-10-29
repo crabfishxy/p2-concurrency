@@ -28,7 +28,7 @@ GHashTable* tables[1000];
 int* spinLocks = NULL;
 pthread_mutex_t* mutexes = NULL;
 
-// int the_n_elements = 0;
+int the_n_elements = 0;
 
 struct prog_config the_config;
 
