@@ -30,6 +30,8 @@ pthread_mutex_t* mutexes = NULL;
 
 int the_n_elements = 0;
 
+int table_nums = 1;
+
 struct prog_config the_config;
 
 long long runTime = 0;
@@ -142,6 +144,10 @@ void signal_handler(int sigNum){
 // }
 // #endif
 
+int simple_hash(int key){
+    return key % table_nums;
+}
+
 void* thread_func(void* thread_id){
     int id = *((int*)thread_id);
 
@@ -159,8 +165,10 @@ void* thread_func(void* thread_id){
     //	#endif
         vtune_task_begin(id);
     		for (int i = per_part * id; i < per_part * (id + 1); i++) {
-    				//SortedList_insert(&lists[id], &elements[i]);
-    			//SortedList_insert(&lists[id], get_element(i));
+                int table_index = simple_hash(i);
+                pthread_mutex_lock(&mutexes[table_index]);
+			    g_hash_table_insert (tables[table_index], GINT_TO_POINTER (i), GINT_TO_POINTER (i));
+			    pthread_mutex_unlock(&mutexes[table_index]);
     		}
     //	#ifdef USE_VTUNE
     //			__itt_task_end(itt_domain);
@@ -172,7 +180,6 @@ void* thread_func(void* thread_id){
 //			SortedListElement_t *p = malloc(sizeof(SortedListElement_t));
 //			assert(p);
 //			p->key = keys[i];
-
 
 			pthread_mutex_lock(&mutexes[0]);
 			g_hash_table_insert (tables[0], GINT_TO_POINTER (i), GINT_TO_POINTER (i));
@@ -197,6 +204,7 @@ int main(int argc, char** argv) {
 		int numThreads = the_config.numThreads;
 		int iterations = the_config.iterations;
 		int numParts = the_config.numParts;
+        table_nums = numParts;
 
     signal(SIGSEGV, signal_handler);
 
@@ -213,7 +221,7 @@ int main(int argc, char** argv) {
 #endif
 
 #if defined(USE_MULTITABLES)
-    for(int i = 0; i < numThreads; i ++){
+    for(int i = 0; i < numParts; i ++){
         tables[i] = g_hash_table_new (NULL, NULL);
     }
 #else
@@ -285,7 +293,10 @@ int main(int argc, char** argv) {
     {
     	long total = 0;
 #if defined(USE_MULTITABLES)
-			for(int i = 0; i < numThreads; i++) {
+			for(int i = 0; i < the_n_elements; i++) {
+                int table_index = simple_hash(i);
+                int val = GPOINTER_TO_INT (g_hash_table_lookup (tables[table_index], GINT_TO_POINTER (i)));
+                assert(val == i);
 #else
 			for(int i = 0; i < the_n_elements; i++) {
                 int val = GPOINTER_TO_INT (g_hash_table_lookup (tables[0], GINT_TO_POINTER (i)));
